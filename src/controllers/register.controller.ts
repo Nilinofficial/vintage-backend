@@ -6,7 +6,7 @@ export const registerController = async (req: Request, res: Response) => {
   const data = req.body as RegisterInput;
 
  const user = await registerUserService(data)
-  res.status(200).json({
+  res.status(201).json({
     success: true,
     message: "User Created Successfully",
     user,
