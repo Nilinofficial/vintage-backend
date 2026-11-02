@@ -3,6 +3,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const PORT = Number(process.env.PORT);
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error("JWT Secret is missing");
+}
 
 // fail-fast configuration validation.
 if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
@@ -26,4 +31,5 @@ export const env = {
   DB_USER: required("DB_USER"),
   DB_PASSWORD: required("DB_PASSWORD"),
   DB_NAME: required("DB_NAME"),
+  JWT_SECRET,
 };

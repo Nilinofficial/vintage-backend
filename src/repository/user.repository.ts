@@ -1,12 +1,6 @@
 import { pool } from "../config/database.js";
+import { CreateUser, User } from "../types/user.types.js";
 
-type CreateUserInput = {
-  name: string;
-  username: string;
-  email: string;
-  passwordHash: string;
-  date_of_birth: string;
-};
 
 export const createUser = async ({
   name,
@@ -14,7 +8,7 @@ export const createUser = async ({
   email,
   passwordHash,
   date_of_birth,
-}: CreateUserInput) => {
+}: CreateUser) => {
   const query = `
     INSERT INTO users (
       name,

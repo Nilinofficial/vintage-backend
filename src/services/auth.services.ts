@@ -13,17 +13,22 @@ export const passwordHashService = async (password: string) => {
   return passwordHash;
 };
 
-export const registerUserService = async({name, username, password, email, date_of_birth}:RegisterInput) => {
-     const hashedPassword = await passwordHashService(password);
+export const registerUserService = async ({
+  name,
+  username,
+  password,
+  email,
+  date_of_birth,
+}: RegisterInput) => {
+  const hashedPassword = await passwordHashService(password);
 
   const user = await createUser({
     name,
     username,
     email,
-    passwordHash:hashedPassword,
-     date_of_birth
+    passwordHash: hashedPassword,
+    date_of_birth,
   });
 
   return user;
-
-}
+};
