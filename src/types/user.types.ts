@@ -1,5 +1,5 @@
 export type User = {
-  id: string; 
+  id: string;
   name: string;
   username: string;
   email: string;
@@ -12,4 +12,8 @@ export type CreateUser = {
   email: string;
   passwordHash: string;
   date_of_birth: string;
-}
+};
+
+export type UserWithPassword = User & {
+  password_hash: string;
+};

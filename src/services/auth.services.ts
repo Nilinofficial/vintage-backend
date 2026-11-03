@@ -1,6 +1,7 @@
 import argon2 from "argon2";
-import { createUser } from "../repository/user.repository.js";
+import { createUser, findUserByEmail } from "../repository/user.repository.js";
 import { RegisterInput } from "../validators/auth.validator.js";
+import { generateAccessToken } from "../utils/jwt.js";
 
 export const passwordHashService = async (password: string) => {
   const passwordHash = await argon2.hash(password, {
@@ -31,4 +32,22 @@ export const registerUserService = async ({
   });
 
   return user;
+};
+
+export const loginService = async (email: string, password: string) => {
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    return null;
+  }
+
+  const isPasswordValid = await argon2.verify(user.password_hash, password);
+
+  if (!isPasswordValid) {
+    return null;
+  }
+
+  const token = generateAccessToken(user.id);
+
+  return token;
 };
