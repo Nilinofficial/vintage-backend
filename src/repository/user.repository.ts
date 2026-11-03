@@ -1,5 +1,5 @@
 import { pool } from "../config/database.js";
-import { CreateUser, UserWithPassword } from "../types/user.types.js";
+import { CreateUser, User, UserWithPassword } from "../types/user.types.js";
 
 export const createUser = async ({
   name,
@@ -34,6 +34,18 @@ export const findUserByEmail = async (email: string): Promise<UserWithPassword |
   `;
 
   const result = await pool.query<UserWithPassword>(query, [email]);
+
+  return result.rows[0] ?? null;
+};
+
+export const findUserById = async (id: string): Promise<User | null> => {
+  const query = `
+    SELECT id, name, username, email, created_at
+    FROM users
+    WHERE id = $1
+  `;
+
+  const result = await pool.query<User>(query, [id]);
 
   return result.rows[0] ?? null;
 };
