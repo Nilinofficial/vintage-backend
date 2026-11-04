@@ -1,0 +1,49 @@
+import { pool } from "../config/database.js";
+
+export const findConnectionBetweenUsers = async (userId1: string, userId2: string) => {
+  const query = `
+    SELECT id, sender_id, receiver_id, status
+    FROM connection_requests
+    WHERE
+      (sender_id = $1 AND receiver_id = $2)
+      OR
+      (sender_id = $2 AND receiver_id = $1)
+    LIMIT 1
+  `;
+
+  const result = await pool.query(query, [userId1, userId2]);
+
+  return result.rows[0] ?? null;
+};
+
+export const createConnectionRequest = async (senderId: string, receiverId: string) => {
+  const query = `
+    INSERT INTO connection_requests (sender_id, receiver_id)
+    VALUES ($1, $2)
+    RETURNING id, sender_id, receiver_id, status, created_at
+  `;
+
+  const result = await pool.query(query, [senderId, receiverId]);
+  return result.rows[0];
+};
+
+export const getReceivedConnectionRequests = async (userId: string) => {
+  const query = `
+    SELECT
+      cr.id,
+      cr.sender_id,
+      cr.status,
+      cr.created_at,
+      u.name,
+      u.username
+    FROM connection_requests cr
+    JOIN users u ON u.id = cr.sender_id
+    WHERE cr.receiver_id = $1
+      AND cr.status = 'pending'
+    ORDER BY cr.created_at DESC
+  `;
+
+  const result = await pool.query(query, [userId]);
+
+  return result.rows;
+};
