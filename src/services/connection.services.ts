@@ -2,6 +2,7 @@ import {
   createConnectionRequest,
   findConnectionBetweenUsers,
   getReceivedConnectionRequests,
+  updateConnectionRequestStatus,
 } from "../repository/user.connection.js";
 import { AppError } from "../utils/AppError.js";
 
@@ -21,4 +22,17 @@ export const sendConnectionRequestService = async (senderId: string, receiverId:
 
 export const getReceivedRequestsService = async (userId: string) => {
   return getReceivedConnectionRequests(userId);
+};
+
+export const respondToConnectionRequestService = async (
+  requestId: string,
+  receiverId: string,
+  status: "accepted" | "rejected",
+) => {
+  const updatedRequest = await updateConnectionRequestStatus(requestId, receiverId, status);
+
+  if (!updatedRequest) {
+    throw new AppError(404, "Pending connection request not found");
+  }
+  return updatedRequest;
 };

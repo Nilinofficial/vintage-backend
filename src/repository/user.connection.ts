@@ -47,3 +47,23 @@ export const getReceivedConnectionRequests = async (userId: string) => {
 
   return result.rows;
 };
+
+export const updateConnectionRequestStatus = async (
+  requestId: string,
+  receiverId: string,
+  status: "accepted" | "rejected",
+) => {
+  const query = `
+    UPDATE connection_requests
+    SET status = $1,
+        updated_at = NOW()
+    WHERE id = $2
+      AND receiver_id = $3
+      AND status = 'pending'
+    RETURNING id, sender_id, receiver_id, status, updated_at
+  `;
+
+  const result = await pool.query(query, [status, requestId, receiverId]);
+
+  return result.rows[0] ?? null;
+};
