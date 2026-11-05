@@ -13,10 +13,17 @@ export const loginController = async (req: Request, res: Response) => {
       message: "Invalid email or password",
     });
     return;
-  }
+  };
+
+  res.cookie("accessToken", token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  path: "/",
+  maxAge: 60 * 60 * 1000,
+});
 
   res.status(200).json({
     success: true,
-    token,
   });
 };

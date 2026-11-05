@@ -1,6 +1,7 @@
 import {
   createConnectionRequest,
   findConnectionBetweenUsers,
+  getFriends,
   getReceivedConnectionRequests,
   updateConnectionRequestStatus,
 } from "../repository/user.connection.js";
@@ -35,4 +36,8 @@ export const respondToConnectionRequestService = async (
     throw new AppError(404, "Pending connection request not found");
   }
   return updatedRequest;
+};
+
+export const getFriendsService = async (userId: string) => {
+  return getFriends(userId);
 };

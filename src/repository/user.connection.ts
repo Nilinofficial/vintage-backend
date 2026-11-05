@@ -67,3 +67,24 @@ export const updateConnectionRequestStatus = async (
 
   return result.rows[0] ?? null;
 };
+
+export const getFriends = async (userId: string) => {
+  const query = `
+    SELECT
+      u.id,
+      u.name,
+      u.username
+    FROM connection_requests cr
+    JOIN users u
+      ON u.id = CASE
+        WHEN cr.sender_id = $1 THEN cr.receiver_id
+        ELSE cr.sender_id
+      END
+    WHERE (cr.sender_id = $1 OR cr.receiver_id = $1)
+      AND cr.status = 'accepted'
+  `;
+
+  const result = await pool.query(query, [userId]);
+
+  return result.rows;
+};

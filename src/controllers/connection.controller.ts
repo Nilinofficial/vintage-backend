@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { AppError } from "../utils/AppError.js";
 import {
+    getFriendsService,
   getReceivedRequestsService,
   respondToConnectionRequestService,
   sendConnectionRequestService,
@@ -58,5 +59,23 @@ export const respondToConnectionRequestController = async (req: Request, res: Re
     success: true,
     message: `Connection request ${status}`,
     connection: updatedRequest,
+  });
+};
+
+export const getFriendsController = async (
+  req: Request,
+  res: Response
+) => {
+  const userId = req.userId;
+
+  if (!userId) {
+    throw new AppError(401, "Unauthorized");
+  }
+
+  const friends = await getFriendsService(userId);
+
+  res.status(200).json({
+    success: true,
+    friends,
   });
 };

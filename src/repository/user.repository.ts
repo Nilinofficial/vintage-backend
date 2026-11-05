@@ -49,3 +49,5 @@ export const findUserById = async (id: string): Promise<User | null> => {
 
   return result.rows[0] ?? null;
 };
+
+
