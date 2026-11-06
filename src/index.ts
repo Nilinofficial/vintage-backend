@@ -1,39 +1,18 @@
-import express from "express";
 import { env } from "./config/env.js";
-import healthRouter from "./routes/health.routes.js";
 import { pool } from "./config/database.js";
-import authRouter from "./routes/auth.routes.js";
-import userRouter from "./routes/user.routes.js";
-import connectionRouter from "./routes/connection.routes.js";
-import { errorHandler } from "./middlewares/error.middleware.js";
-import cookieParser from "cookie-parser";
-import cors from 'cors'
-const app = express();
+import { createServer } from "node:http";
+import app from "./app.js";
+import { initializeSocket } from "./sockets/index.js";
 
-
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
-
-app.use(cookieParser());
-app.use(express.json());
-
-app.use("/api/health", healthRouter);
-app.use("/api/auth", authRouter);
-app.use("/api/users", userRouter);
-app.use("/api/connections", connectionRouter);
-
-app.use(errorHandler);
+const httpServer = createServer(app);
+initializeSocket(httpServer);
 
 async function startServer(): Promise<void> {
   try {
     await pool.query("SELECT 1");
     console.log("PostgreSQL connected successfully");
 
-    app.listen(env.PORT, () => {
+    httpServer.listen(env.PORT, () => {
       console.log(`listening to PORT ${env.PORT}`);
     });
   } catch (error) {

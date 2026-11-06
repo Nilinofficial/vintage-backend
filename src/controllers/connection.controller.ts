@@ -1,20 +1,30 @@
 import type { Request, Response } from "express";
 import { AppError } from "../utils/AppError.js";
 import {
-    getFriendsService,
+  getFriendsService,
   getReceivedRequestsService,
   respondToConnectionRequestService,
   sendConnectionRequestService,
 } from "../services/connection.services.js";
+import { getIO } from "../sockets/index.js";
+import { getUserBasicInfoService } from "./user.controller.js";
+import { createFriendRequestNotificationService } from "../services/notification.services.js";
 
 export const sendConnectionRequestController = async (req: Request, res: Response) => {
   const senderId = req.userId;
   const { receiverId } = req.body;
 
-  if (!senderId) throw new AppError(401, "Unauthorized");
+  if (!senderId) {
+    throw new AppError(401, "Unauthorized");
+  }
 
   const connection = await sendConnectionRequestService(senderId, receiverId);
 
+  const notification = await createFriendRequestNotificationService(senderId, receiverId);
+
+  const io = getIO();
+
+  io.to(`user:${receiverId}`).emit("notification", notification);
   res.status(201).json({
     message: "Connection request sent successfully",
     connection,
@@ -62,10 +72,7 @@ export const respondToConnectionRequestController = async (req: Request, res: Re
   });
 };
 
-export const getFriendsController = async (
-  req: Request,
-  res: Response
-) => {
+export const getFriendsController = async (req: Request, res: Response) => {
   const userId = req.userId;
 
   if (!userId) {

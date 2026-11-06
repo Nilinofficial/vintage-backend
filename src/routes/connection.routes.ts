@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-    getFriendsController,
+  getFriendsController,
   getReceivedRequestsController,
   respondToConnectionRequestController,
   sendConnectionRequestController,
@@ -29,10 +29,6 @@ router.patch(
   respondToConnectionRequestController,
 );
 
-router.get(
-  "/",
-  authenticate,
-  getFriendsController
-);
+router.get("/", authenticate, getFriendsController);
 
 export default router;

@@ -50,4 +50,19 @@ export const findUserById = async (id: string): Promise<User | null> => {
   return result.rows[0] ?? null;
 };
 
+export interface UserBasicInfo {
+  id: string;
+  name: string;
+  username: string;
+}
 
+export const findUserBasicInfoById = async (userId: string): Promise<UserBasicInfo | null> => {
+  const result = await pool.query<UserBasicInfo>(
+    `SELECT id, name, username
+     FROM users
+     WHERE id = $1`,
+    [userId],
+  );
+
+  return result.rows[0] ?? null;
+};
